@@ -70,6 +70,8 @@ def main(train=True, wandb_log=False):
         side_channels=[channel], no_graphics=no_graphics, seed=seed)
     env = UnityToGymWrapper(unity_env)
 
+    set_seed_everywhere(seed)
+
     agent = Agent(
         alpha=alpha,
         state_dim=state_dim, 

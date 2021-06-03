@@ -38,7 +38,7 @@ class BasePolicyNetwork(nn.Module):
         self.action_range = action_range
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = 'cpu'
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def forward(self, state):

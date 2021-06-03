@@ -77,6 +77,8 @@ def main(train=True, wandb_log=False):
         side_channels=[channel], no_graphics=no_graphics, seed=seed)
     env = UnityToGymWrapper(unity_env)
 
+    set_seed_everywhere(seed)
+
     agent = Agent(
         alpha=alpha,
         state_dim=state_dim, 
@@ -145,7 +147,8 @@ def main(train=True, wandb_log=False):
 
                         q1_loss.append(q1.detach().cpu().numpy())
                         q2_loss.append(q2.detach().cpu().numpy())
-                        p_loss.append(p1.detach().cpu().numpy())
+                        if p1:
+                            p_loss.append(p1.detach().cpu().numpy())
             
                     step += 1
                     cumulative_reward += reward

@@ -25,7 +25,7 @@ class BaseValueNetwork(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_' + method)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = 'cpu'
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
         self.to(self.device)
 
@@ -62,7 +62,7 @@ class BaseQNetwork(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_' + method)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = 'cpu'
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
         self.to(self.device)
 
