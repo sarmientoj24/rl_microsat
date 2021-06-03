@@ -10,21 +10,22 @@ import numpy as np
 class Agent(BaseAgent):
     def __init__(self, alpha=0.0001, state_dim=50, env=None, gamma=0.995,
             action_dim=4, action_range=1, max_size=1000000, tau=1e-2,
-            hidden_dim=128, batch_size=512, reward_scale=1, policy_target_update_interval=1):
-        super(Agent, self).__init__(batch_size=batch_size, hidden_dim=hidden_dim)
+            hidden_dim=128, batch_size=512, reward_scale=1, policy_target_update_interval=1,
+            device='cpu'):
+        super(Agent, self).__init__(batch_size=batch_size, hidden_dim=hidden_dim, reward_scale=reward_scale)
 
-        self.policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim,
+        self.policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim, device=device,
                     name='policy_net', hidden_dim=hidden_dim, action_range=action_range, method='td3')
-        self.target_policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim,
+        self.target_policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim, device=device,
                     name='target_policy_net', hidden_dim=hidden_dim, action_range=action_range, method='td3')
         self.q_net1 = BaseQNetwork(alpha, state_dim, action_dim=action_dim, hidden_dim=hidden_dim, 
-                    name='q_net1', method='td3')
+                    name='q_net1', method='td3', device=device,)
         self.q_net2 = BaseQNetwork(alpha, state_dim, action_dim=action_dim, hidden_dim=hidden_dim, 
-                    name='q_net2', method='td3')
+                    name='q_net2', method='td3', device=device,)
         self.target_q_net1 = BaseQNetwork(alpha, state_dim, action_dim=action_dim, hidden_dim=hidden_dim, 
-                    name='target_q_net1', method='td3')
+                    name='target_q_net1', method='td3', device=device,)
         self.target_q_net2 = BaseQNetwork(alpha, state_dim, action_dim=action_dim, hidden_dim=hidden_dim, 
-                    name='target_q_net2', method='td3')
+                    name='target_q_net2', method='td3', device=device,)
 
         self.reward_scale = reward_scale
         self.target_q_net1 = self.update_network_parameters(

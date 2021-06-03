@@ -16,7 +16,7 @@ from mlagents_envs.environment import UnityEnvironment
 from src.commons.utils import get_remaining_time
 
 
-def main(train=True, wandb_log=False):
+def main(train=True, wandb_log=False, gpu=False):
     METHOD = 'td3'
 
     conf = OmegaConf.load(f'./config/{METHOD}.yaml')
@@ -65,7 +65,10 @@ def main(train=True, wandb_log=False):
     # Evaluation
     deterministic = conf.eval.deterministic
 
-
+    if gpu:
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    else:
+        device = 'cpu'
 
     ################# ENVIRONMENT ###################
     if not train:
@@ -89,7 +92,8 @@ def main(train=True, wandb_log=False):
         action_range=action_range, 
         max_size=replay_buffer_size, 
         policy_target_update_interval=policy_target_update_interval,
-        reward_scale=reward_scale
+        reward_scale=reward_scale,
+        device=device
     )
 
     best_score = env.reward_range[0]
@@ -202,4 +206,14 @@ def main(train=True, wandb_log=False):
     env.close()
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test")
+    parser.add_argument("--wandb")
+    parser.add_argument("--gpu")
+    args = parser.parse_args()
+
+    train = False if args.test else True
+    wandb_log = True if args.wandb else False
+    gpu = True if args.gpu else False
+
+    main(train=train, wandb_log=wandb_log, gpu=gpu)

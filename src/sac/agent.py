@@ -11,7 +11,7 @@ from src.commons.trainer import BaseAgent
 class Agent(BaseAgent):
     def __init__(self, alpha=0.0001, state_dim=50, env=None, gamma=0.995,
             action_dim=4, action_range=1, max_size=1000000, tau=1e-2,
-            hidden_dim=128, batch_size=256, reward_scale=1):
+            hidden_dim=128, batch_size=256, reward_scale=1, device='cpu'):
         super(Agent, self).__init__(batch_size=batch_size, reward_scale=reward_scale)
 
         self.policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim,

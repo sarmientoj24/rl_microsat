@@ -8,7 +8,7 @@ from src.commons.utils import linear_weights_init
 
 class BaseValueNetwork(nn.Module):
     def __init__(self, alpha=0.0001, state_dim=50, hidden_dim=128, init_w=3e-3, 
-            name='value_net', chkpt_dir='./tmp/', method=''):
+            name='value_net', chkpt_dir='./tmp/', method='', device='cpu'):
         super(BaseValueNetwork, self).__init__()
         
         self.fc1 = nn.Linear(state_dim, hidden_dim)
@@ -25,7 +25,7 @@ class BaseValueNetwork(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_' + method)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.device = device
 
         self.to(self.device)
 

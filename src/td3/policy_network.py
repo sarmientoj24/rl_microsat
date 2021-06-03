@@ -11,8 +11,8 @@ from src.commons.base_networks import BasePolicyNetwork
 class PolicyNetwork(BasePolicyNetwork):
     def __init__(self, alpha=0.0001, state_dim=50, action_dim=4, action_range=1, 
             log_std_min=-20, log_std_max=2, hidden_dim=128, init_w=3e-3, 
-            name='policy', chkpt_dir='./tmp/', method=''):
-        super(PolicyNetwork, self).__init__(method=method, hidden_dim=hidden_dim)
+            name='policy', chkpt_dir='./tmp/', method='', device='cpu'):
+        super(PolicyNetwork, self).__init__(method=method, hidden_dim=hidden_dim, device=device)
         self.to(self.device)
 
     def forward(self, state):

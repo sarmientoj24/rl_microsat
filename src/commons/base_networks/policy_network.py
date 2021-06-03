@@ -12,7 +12,7 @@ import numpy as np
 class BasePolicyNetwork(nn.Module):
     def __init__(self, alpha=0.0001, state_dim=50, action_dim=4, action_range=1, 
             log_std_min=-20, log_std_max=2, hidden_dim=128, init_w=3e-3, 
-            name='policy', chkpt_dir='./tmp/', method=''):
+            name='policy', chkpt_dir='./tmp/', method='', device='cpu'):
         super(BasePolicyNetwork, self).__init__()
 
         self.name = name
@@ -38,7 +38,7 @@ class BasePolicyNetwork(nn.Module):
         self.action_range = action_range
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.device = device
         self.to(self.device)
 
     def forward(self, state):
