@@ -13,7 +13,7 @@ class PolicyNetwork(BasePolicyNetwork):
             log_std_min=-20, log_std_max=2, hidden_dim=128, init_w=3e-3, 
             name='policy', chkpt_dir='./tmp/', method=''):
         super(PolicyNetwork, self).__init__(method=method, hidden_dim=hidden_dim)
-        self.to(self.device)
+        self.to('cpu')
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
@@ -36,11 +36,11 @@ class PolicyNetwork(BasePolicyNetwork):
         
         normal = Normal(0, 1)
         z      = normal.sample() 
-        action_0 = torch.tanh(mean + std*z.to(self.device)) # TanhNormal distribution as actions; reparameterization trick
+        action_0 = torch.tanh(mean + std*z.to('cpu')) # TanhNormal distribution as actions; reparameterization trick
 
         action = self.action_range*mean if deterministic else self.action_range*action_0
 
-        log_prob = Normal(mean, std).log_prob(mean+ std*z.to(self.device)) - torch.log(1. - action_0.pow(2) + epsilon) -  np.log(self.action_range)
+        log_prob = Normal(mean, std).log_prob(mean+ std*z.to('cpu')) - torch.log(1. - action_0.pow(2) + epsilon) -  np.log(self.action_range)
         # both dims of normal.log_prob and -log(1-a**2) are (N,dim_of_action); 
         # the Normal.log_prob outputs the same dim of input features instead of 1 dim probability, 
         # needs sum up across the features dim to get 1 dim prob; or else use Multivariate Normal.
@@ -52,7 +52,7 @@ class PolicyNetwork(BasePolicyNetwork):
                 noise,
                 -eval_noise_clip,
                 eval_noise_clip)
-        action = action + noise.to(self.device)
+        action = action + noise.to('cpu')
 
         return action, log_prob
 
@@ -60,15 +60,15 @@ class PolicyNetwork(BasePolicyNetwork):
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):
-        self.load_state_dict(torch.load(self.checkpoint_file, map_location=T.device(self.device)))
+        self.load_state_dict(torch.load(self.checkpoint_file, map_location=T.device('cpu')))
 
     def choose_action(self, state, deterministic=False, explore_noise_scale=0.5):
-        state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+        state = torch.FloatTensor(state).unsqueeze(0).to('cpu')
         mean, log_std = self.forward(state)
         std = log_std.exp()
         
         normal = Normal(0, 1)
-        z      = normal.sample().to(self.device)
+        z      = normal.sample().to('cpu')
         action = mean.detach().cpu().numpy()[0] if deterministic else torch.tanh(mean + std*z).detach().cpu().numpy()[0]
         ''' add noise '''
         noise = normal.sample(action.shape) * explore_noise_scale

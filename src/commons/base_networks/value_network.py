@@ -27,7 +27,7 @@ class BaseValueNetwork(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-        self.to(self.device)
+        self.to('cpu')
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
@@ -64,7 +64,7 @@ class BaseQNetwork(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-        self.to(self.device)
+        self.to('cpu')
 
     def forward(self, state, action):
         x = torch.cat([state, action], 1) # the dim 0 is number of samples
@@ -78,4 +78,4 @@ class BaseQNetwork(nn.Module):
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):
-        self.load_state_dict(torch.load(self.checkpoint_file, map_location=torch.device(self.device)))
+        self.load_state_dict(torch.load(self.checkpoint_file, map_location=torch.device('cpu')))

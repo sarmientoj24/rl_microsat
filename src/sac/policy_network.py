@@ -13,7 +13,7 @@ class PolicyNetwork(BasePolicyNetwork):
             log_std_min=-20, log_std_max=2, hidden_dim=128, init_w=3e-3, 
             name='policy', chkpt_dir='tmp/', method=''):
         super(PolicyNetwork, self).__init__()
-        self.to(self.device)
+        self.to('cpu')
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
@@ -36,11 +36,11 @@ class PolicyNetwork(BasePolicyNetwork):
         
         normal = Normal(0, 1)
         z      = normal.sample(mean.shape) 
-        action_0 = torch.tanh(mean + std*z.to(self.device))
+        action_0 = torch.tanh(mean + std*z.to('cpu'))
         action = self.action_range * action_0
         
         ''' stochastic evaluation '''
-        log_prob = Normal(mean, std).log_prob(mean + std*z.to(self.device)) - \
+        log_prob = Normal(mean, std).log_prob(mean + std*z.to('cpu')) - \
             torch.log(1. - action_0.pow(2) + epsilon) -  np.log(self.action_range)
         ''' deterministic evaluation '''
         '''
@@ -58,12 +58,12 @@ class PolicyNetwork(BasePolicyNetwork):
         self.load_state_dict(torch.load(self.checkpoint_file))
 
     def choose_action(self, state, deterministic=False):
-        state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
+        state = torch.FloatTensor(state).unsqueeze(0).to('cpu')
         mean, log_std = self.forward(state)
         std = log_std.exp()
         
         normal = Normal(0, 1)
-        z      = normal.sample(mean.shape).to(self.device)
+        z      = normal.sample(mean.shape).to('cpu')
         action = self.action_range * torch.tanh(mean + std*z)
         
         action = torch.tanh(mean).detach().cpu().numpy()[0] if deterministic \
