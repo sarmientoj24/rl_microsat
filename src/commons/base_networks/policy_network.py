@@ -38,8 +38,8 @@ class BasePolicyNetwork(nn.Module):
         self.action_range = action_range
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.to('cpu')
+        self.device = 'cpu'
+        self.to(self.device)
 
     def forward(self, state):
         pass
@@ -51,7 +51,7 @@ class BasePolicyNetwork(nn.Module):
         torch.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):
-        self.load_state_dict(torch.load(self.checkpoint_file, map_location=torch.device('cpu')))
+        self.load_state_dict(torch.load(self.checkpoint_file, map_location=torch.device(self.device)))
 
     def sample_action(self):
         action = torch.FloatTensor(self.action_dim).uniform_(-1, 1)
