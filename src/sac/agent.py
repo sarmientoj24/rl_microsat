@@ -15,14 +15,14 @@ class Agent(BaseAgent):
         super(Agent, self).__init__(batch_size=batch_size, reward_scale=reward_scale)
 
         self.policy_net = PolicyNetwork(alpha, state_dim, action_dim=action_dim,
-                    name='policy_net', hidden_dim=hidden_dim,
+                    name='policy_net', hidden_dim=hidden_dim, device=device,
                     action_range=action_range, method='sac')
-        self.q_net1 = QNetwork(alpha, state_dim, action_dim=action_dim,
+        self.q_net1 = QNetwork(alpha, state_dim, action_dim=action_dim, device=device,
                     name='q_net1', method='sac')
-        self.q_net2 = QNetwork(alpha, state_dim, action_dim=action_dim,
+        self.q_net2 = QNetwork(alpha, state_dim, action_dim=action_dim, device=device,
                     name='q_net2', method='sac')
-        self.value_net = ValueNetwork(alpha, state_dim, name='value', method='sac')
-        self.target_value_net = ValueNetwork(alpha, state_dim, name='target_value', method='sac')
+        self.value_net = ValueNetwork(alpha, state_dim, name='value', method='sac', device=device,)
+        self.target_value_net = ValueNetwork(alpha, state_dim, name='target_value', method='sac', device=device,)
 
         self.target_value_net = self.update_network_parameters(
             self.value_net, self.target_value_net,

@@ -45,7 +45,7 @@ class BaseValueNetwork(nn.Module):
 
 class BaseQNetwork(nn.Module):
     def __init__(self, alpha=0.0001,  state_dim=50, action_dim=4, hidden_dim=128, init_w=3e-3, 
-            name='q_net', chkpt_dir='./tmp/', method=''):
+            name='q_net', chkpt_dir='./tmp/', method='', device='cpu'):
         super(BaseQNetwork, self).__init__()
         
         self.fc1 = nn.Linear(state_dim + action_dim, hidden_dim)
@@ -62,7 +62,7 @@ class BaseQNetwork(nn.Module):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name + '_' + method)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.device = device
 
         self.to(self.device)
 
